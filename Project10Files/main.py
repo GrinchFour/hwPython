@@ -8,20 +8,33 @@ def searchWordMessage():
     return input()
 
 
+def redText(text):
+    while text[-2] == '.':
+        text = text.replace('.', '', 1)
+    return text
+
+
 def searchFunc(names, word):
-    for i in range(len(names)):
+    for i in range(0, len(names)):
         f1 = open(names[i] + '.txt', 'r', encoding='utf8')
         text = f1.read().replace('.', '..').replace('!', '..').replace('...', '..').replace('?', '..')  # БАГ С ТОЧКОЙ
         text = text.split('. ')
-        localSumm = 0
+
         global gList, gSum
+        localSumm = 0
+
         for j in range(len(text)):
-            temp = text[j].find(word)
-            if temp != -1 and (temp == 0 or text[j][temp - 1] == ' ') and (
-                    text[j][temp + len(word)] == ' ' or text[j][temp + len(word)] == '.'):
-                localSumm += 1
-                gSum += 1
-                gList.append(text[j])  # Список предложений с искомыми словами
+            temp = text[j].find(word)  # Находим слово в тексте
+            while temp != -1:
+                if (temp == 0 or text[j][temp - 1] == ' ') and (
+                        text[j][temp + len(word)] == ' ' or text[j][temp + len(word)] == '.' or
+                        text[j][temp + len(word)] == ','):
+                    localSumm += 1
+                    gSum += 1
+                    text[j] = redText(text[j])  # Исправление количества точек в конце предложения
+                    gList.append(text[j])  # Список предложений с искомыми словами
+                temp = text[j].find(word, temp + 1)  # Находим следующее слово в тексте
+
         global gSumFile
         gSumFile[i][1] += localSumm
         f1.close()
